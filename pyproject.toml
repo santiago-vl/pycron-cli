@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pycron-cli"
+version = "0.1.0"
+description = "Schedule Python scripts on macOS using launchd"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+dependencies = ["typer>=0.9.0", "rich>=13.0.0"]
+classifiers = [
+    "Environment :: Console",
+    "Environment :: MacOS X",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.scripts]
+pycron = "src.cli:app"
+
+[tool.setuptools]
+package-dir = {"src" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "I"]
