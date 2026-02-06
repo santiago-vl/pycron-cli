@@ -10,6 +10,14 @@ Perfect for executing **standalone Python scripts** as scheduled tasks on macOS,
 
 > ⚠️ Uses macOS launchd, NOT cron. Accepts a cron-like subset and translates it to launchd.
 
+## Features
+
+- ✅ Cron-like syntax (subset) translated to `launchd`
+- ✅ Manage tasks by name (`add`, `status`, `logs`, `list`, `remove`)
+- ✅ Persistence across reboots (launchd)
+- ✅ Quick access to logs from the CLI
+- ✅ Designed for standalone Python scripts (no packaging required)
+
 ## Quick Start
 
 ```bash
@@ -31,6 +39,68 @@ pycron list
 # Remove
 pycron remove --name my-task
 ```
+
+## Installation (dev / local)
+
+Recommended for local development: create a virtual environment inside the repo and install in editable mode.
+
+```bash
+cd /path/to/pycron-cli
+
+python3 -m venv .venv
+./.venv/bin/python -m pip install -U pip
+./.venv/bin/python -m pip install -e .
+```
+
+Verify:
+
+```bash
+./.venv/bin/pycron --help
+```
+
+> Note: `pip install -e .` installs the project in editable mode, so code changes apply without reinstalling.
+
+## Run `pycron` from any directory (no venv activation)
+
+If you don’t want to run `source .venv/bin/activate` every time, create a small wrapper in `~/.local/bin` that points to the venv executable.
+
+### Recommended: wrapper in `~/.local/bin`
+
+1) Create the wrapper:
+
+```bash
+mkdir -p ~/.local/bin
+
+cat > ~/.local/bin/pycron <<'EOF'
+#!/bin/zsh
+exec /ABSOLUTE/PATH/TO/pycron-cli/.venv/bin/pycron "$@"
+EOF
+
+chmod +x ~/.local/bin/pycron
+```
+
+2) Ensure `~/.local/bin` is in your `PATH` (zsh):
+
+```bash
+grep -q 'export PATH="$HOME/.local/bin:$PATH"' ~/.zshrc || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+3) Test from anywhere:
+
+```bash
+which pycron
+pycron --help
+```
+
+✅ After this, `pycron` works from **any directory**, without activating the environment.
+
+> Replace `/ABSOLUTE/PATH/TO/pycron-cli` with your real path.  
+> Example: `/Users/youruser/Desktop/pycron-cli`
+
+### Why wrapper instead of alias?
+
+An alias only exists in interactive shells and may not work in non-interactive contexts. A wrapper is a real executable and is more reliable.
 
 ## Cron Syntax (Subset)
 
@@ -68,6 +138,8 @@ pycron remove --name my-task
 ## Persistence
 
 Tasks are **saved on disk** and will continue to run after your Mac reboots or shuts down. When you restart your machine and log in, all scheduled tasks will automatically resume.
+
+> Note: persistence and “resume” behavior depends on how the job is registered (user vs system context).
 
 ## Requirements
 
